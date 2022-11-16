@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import styles from './AddUser.module.css';
@@ -9,17 +9,17 @@ import Button from '../UI/Button';
 import ErrorModal from '../UI/ErrorModal';
 
 function AddUser({ onAddUsers }) {
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [error, setError] = useState(false);
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
 
-  const nameChangeHandler = (event) => setName(event.target.value);
-  const ageChangeHandler = (event) => setAge(event.target.value);
+  const [error, setError] = useState(false);
 
   const modalCloseHandler = () => setError(false);
 
   const formSubmitHandler = (event) => {
     event.preventDefault();
+    const age = ageInputRef.current.value;
+    const name = nameInputRef.current.value;
 
     // validation
     if (age >= 18 && name.trim() !== '') {
@@ -29,8 +29,8 @@ function AddUser({ onAddUsers }) {
       onAddUsers(person);
 
       // resetting onSubmit
-      setName('');
-      setAge('');
+      nameInputRef.current.value = '';
+      ageInputRef.current.value = '';
     } else {
       // setting Error State to use in ErrorModal
       setError({
@@ -47,16 +47,14 @@ function AddUser({ onAddUsers }) {
           Username
           <input
             type="text"
-            onChange={nameChangeHandler}
-            value={name}
+            ref={nameInputRef}
           />
         </label>
         <label htmlFor="userage">
           Age (in Years)
           <input
             type="number"
-            onChange={ageChangeHandler}
-            value={age}
+            ref={ageInputRef}
           />
         </label>
         <Button type="submit">Add User</Button>
